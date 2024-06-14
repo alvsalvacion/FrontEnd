@@ -7,6 +7,7 @@ const Signup = () => {
     const passRef = useRef(null);
     const confirmPasswordRef = useRef(null);
     const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const onSubmit = (e) => {
@@ -17,12 +18,15 @@ const Signup = () => {
             password_confirmation: confirmPasswordRef.current.value,
         };
         // console.log(payload);
+        setLoading(true);
         axiosClient.post("/register", payload)
             .then(({ data }) => {
                 alert(data.message);
+                setLoading(false);
                 navigate("/login");
             })
             .catch((err) => {
+                setLoading(false);
                 const response = err.response;
                 console.log("Response status:", response.status);
                 console.log("Response data:", response.data);
@@ -36,24 +40,31 @@ const Signup = () => {
     return (
         <div className="App">
             <div className="auth-form-container">
-                <h2>Sign Up</h2>
-                {errors && Object.keys(errors).length > 0 && (
-                    <div className="validation-error">
-                        {Object.keys(errors).map((key) => (
-                            <p key={key}>{errors[key][0]}</p>
-                        ))}
-                    </div>
+            {loading && (
+                        <div className="loader"></div>
                 )}
-                <form className="signup-form" onSubmit={onSubmit}>
-                    <label htmlFor="email">Email</label>
-                    <input ref={emailRef} type="email" placeholder="Email" id="email" name="email" required />
-                    <label htmlFor="password">Password</label>
-                    <input ref={passRef} type="password" id="password" name="password" required />
-                    <label htmlFor="confirmPassword">Confirm Password</label>
-                    <input ref={confirmPasswordRef} type="password" id="password_confirmation" name="password_confirmation" required />
-                    <button className="submit-btn" type="submit">Sign Up</button>
-                    <Link to="/login" className="link-btn">Already have an account? Login here.</Link>
-                </form>
+                {!loading && (
+                    <>
+                        {errors && (
+                            <div className="validation-error">
+                                {Object.keys(errors).map((key) => (
+                                    <div key={key}>{errors[key]}</div>
+                                ))}
+                            </div>
+                        )}
+                <h2>Sign Up</h2>
+                    <form className="signup-form" onSubmit={onSubmit}>
+                        <label htmlFor="email">Email</label>
+                        <input ref={emailRef} type="email" placeholder="Email" id="email" name="email" required />
+                        <label htmlFor="password">Password</label>
+                        <input ref={passRef} type="password" id="password" name="password" required />
+                        <label htmlFor="confirmPassword">Confirm Password</label>
+                        <input ref={confirmPasswordRef} type="password" id="password_confirmation" name="password_confirmation" required />
+                        <button className="submit-btn" type="submit">Sign Up</button>
+                        <Link to="/login" className="link-btn">Already have an account? Login here.</Link>
+                    </form>
+                    </>
+                )}
             </div>
         </div>
     );

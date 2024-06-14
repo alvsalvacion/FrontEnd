@@ -10,6 +10,7 @@ export const Login = () => {
     const { setUser, setToken } = useStateContext();
     const navigate = useNavigate();
     const [errors, setErrors] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const onSubmit = (e) => {
         e.preventDefault();
@@ -22,9 +23,11 @@ export const Login = () => {
             .then(({ data }) => {
                 setUser(data.user);
                 setToken(data.token);
+                setLoading(false);
                 navigate("/home");
             })
             .catch((err) => {
+                setLoading(false);
                 const response = err.response;
                 if (response && response.status === 403) {
                     setErrors(response.data.error);
@@ -38,12 +41,17 @@ export const Login = () => {
     return (
         <div className="App">
             <div className="auth-form-container">
-            <h2>Login</h2>
-            {errors && (
-                    <div className="validation-error">
-                        <p>{errors}</p>
-                    </div>
+            {loading && (
+                        <div className="loader"></div>
                 )}
+                {!loading && (
+                    <>
+                {errors && (
+                        <div className="validation-error">
+                            <p>{errors}</p>
+                        </div>
+                    )}
+                <h2>Login</h2>
                 <form className="login-form" onSubmit={onSubmit}>
                     <label htmlFor="email">Email</label>
                     <input ref={emailRef} type="email" placeholder="Email" id="email" name="email" required />
@@ -54,6 +62,8 @@ export const Login = () => {
                 </form>
                 <Link to="/forgot-password" className="link-btn">Forgot password?</Link>
                 <Link to="/signup" className="link-btn">Don't have an account? Register here.</Link>
+                    </>
+                )}
             </div>
         </div>
     );
