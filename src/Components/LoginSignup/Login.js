@@ -32,7 +32,7 @@ export const Login = () => {
                 if (response && response.status === 403) {
                     setErrors(response.data.error);
                 } else if (response && response.status === 422) {
-                    setErrors(response.data.error || "Validation failed. Please check your input.");
+                    setErrors(response.data.error || "Invalid email or password. Please try again");
                 } else {
                     setErrors("An error occurred. Please try again.");
                 }
